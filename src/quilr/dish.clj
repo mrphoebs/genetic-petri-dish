@@ -1,9 +1,9 @@
 (ns quilr.dish
   (:use quil.core))
 
-(def nutrition-value 10)
+(def nutrition-value 1)
 (def injury-value 1)
-(def mutable-genes 100)
+(def mutable-genes 1)
 
 (defn is-living-cell? [dish x y]
   "checks wether the cell in dish at position x, y is non zero/living"
@@ -87,11 +87,21 @@
 
 (defn ga-helper [first] (get-cross-overs 
     (select-best 4 (repeatedly 100 
-                        (fn [] (mutate-dish (into [] first) 2))))))
+                        (fn [] (mutate-dish (into [] first) mutable-genes))))))
+
+(defn print-dish [dish]
+  ;(println (fitness-score (first dish)))
+  (loop [s (clojure.string/replace (str dish) #"[\[\]\s]" "") cols (count (first dish))]
+    (println (apply str (take cols s)))
+    (if (> (count s) cols)    
+     (recur (apply str (drop cols s)) cols)))
+  (println)
+  (println))
+
 
 (defn genetic-algo [dishes]
   (loop [[f & r :as all] dishes acc []]
-    (println (str "generating..." (count acc) " " (select-best 1 acc)))
+    (print-dish (select-best 1 acc))
   (if (> (count acc) 100 )
     acc
     (recur 
