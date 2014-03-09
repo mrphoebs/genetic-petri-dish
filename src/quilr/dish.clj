@@ -1,7 +1,7 @@
 (ns quilr.dish
   (:use quil.core))
 
-(def nutrition-value 1)
+(def nutrition-value 10)
 (def injury-value 1)
 (def mutable-genes 100)
 
@@ -61,7 +61,8 @@
       (dec number-of-genes))))
 
 (defn select-best [n dishes]
-  (shuffle (take-last n (sort-by fitness-score dishes))))
+  (if (= (count dishes) 0) nil
+  (shuffle (take-last n (sort-by fitness-score dishes)))))
 
 (defn create-generation [dish population genes-to-mutate]
   (take population (repeatedly #(mutate-dish dish genes-to-mutate))))
@@ -84,9 +85,15 @@
  "creates a square world of size x size" 
   (into [] (repeat size (into [] (repeat size 0)))))
 
-(defn genetic-algo [[first & rest]]
-  (println first)
-  (genetic-algo
-  (concat rest (get-cross-overs 
-    (select-best 4 (repeatedly 4 
-                        (fn [] (mutate-dish (into [] first) 10))))))))
+(defn ga-helper [first] (get-cross-overs 
+    (select-best 4 (repeatedly 100 
+                        (fn [] (mutate-dish (into [] first) 2))))))
+
+(defn genetic-algo [dishes]
+  (loop [[f & r :as all] dishes acc []]
+    (println (str "generating..." (count acc) " " (select-best 1 acc)))
+  (if (> (count acc) 100 )
+    acc
+    (recur 
+      (concat r (ga-helper f))
+      (cons (if (= nil r) f (into [] (first (select-best 1 r)))) acc)))))

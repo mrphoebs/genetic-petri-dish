@@ -7,4 +7,4 @@
   "I don't do a whole lot ... yet."
   [& args]
   (println "Hello, World!")
-  (genetic-algo (list (empty-dish 4))))
+  (println (select-best 1 (genetic-algo (list (empty-dish 4))))))
